@@ -1,4 +1,6 @@
 .dropdown-toggle {
+  cursor: pointer;
+
   &.arrow-none {
     &:after {
       display: none;
@@ -8,9 +10,10 @@
 
 .pc-header {
   .dropdown-menu {
-    animation: 0.3s ease-in-out 0s normal forwards 0.3s fadeIn;
+    animation: fadeIn 0.3s ease-in-out 0.3s forwards;
   }
 }
+
 @keyframes fadeIn {
   from {
     transform: translate3d(0, 8px, 0);

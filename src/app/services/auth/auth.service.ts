@@ -37,7 +37,7 @@ export class AuthService {
       catchError((error: ErrorResponseModel) => {
         Swal.fire({
           icon: 'error',
-          title: 'Login Failed',
+          title: 'Error',
           text: error.errorMessage || 'Something went wrong. Please try again!',
           confirmButtonText: 'OK'
         });
@@ -59,7 +59,31 @@ export class AuthService {
       catchError((error: ErrorResponseModel) => {
         Swal.fire({
           icon: 'error',
-          title: 'Login Failed',
+          title: 'Error',
+          text: error.errorMessage || 'Something went wrong. Please try again!',
+          confirmButtonText: 'OK'
+        });
+        // Log hoặc xử lý lỗi trước khi trả lại
+        console.error('Error during login:', error);
+        throw error;
+      })
+    );
+  }
+
+  refreshToken(): Observable<BaseResponseModel<LoginResponseModel>> {
+    const refreshToken = this.getRefreshToken();
+    return this.apiService.post<LoginResponseModel>('auth/refresh-token', refreshToken).pipe(
+      tap((response) => {
+        if (response.succeeded) {
+          this.storeAuthData(response.data);
+        } else {
+          throw new Error('Unexpected response format');
+        }
+      }),
+      catchError((error: ErrorResponseModel) => {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
           text: error.errorMessage || 'Something went wrong. Please try again!',
           confirmButtonText: 'OK'
         });
@@ -86,6 +110,14 @@ export class AuthService {
       return false;
     }
     return true;
+  }
+
+  getAccessToken(): string | null {
+    return localStorage.getItem('accessToken');
+  }
+
+  getRefreshToken(): string | null {
+    return localStorage.getItem('refreshToken');
   }
 
   private storeAuthData(data: LoginResponseModel) {

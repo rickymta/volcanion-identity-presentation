@@ -20,41 +20,41 @@ export class ApiService {
   }
 
   private handleError(error: HttpErrorResponse): Observable<never> {
-    const ErrorResponseModel: ErrorResponseModel = {
+    const errorResponse: ErrorResponseModel = {
       errorCode: error.status,
       errorStatus: error.statusText || 'Unknown Error',
       errorMessage: error.error?.message || 'Something went wrong',
       errorDetails: error.error?.ErrorDetails,
       stackTrace: error.error?.StackTrace || null,
     };
-    return throwError(ErrorResponseModel);
+    return throwError(() => errorResponse);
   }
 
   get<T>(endpoint: string, params?: any): Observable<BaseResponseModel<T>> {
     return this.http.get(`${this.baseUrl}/${endpoint}`, { params }).pipe(
       map((response) => this.handleResponse<T>(response)),
-      catchError(this.handleError)
+      catchError((error) => this.handleError(error))
     );
   }
 
   post<T>(endpoint: string, body: any): Observable<BaseResponseModel<T>> {
     return this.http.post(`${this.baseUrl}/${endpoint}`, body).pipe(
       map((response) => this.handleResponse<T>(response)),
-      catchError(this.handleError)
+      catchError((error) => this.handleError(error))
     );
   }
 
   put<T>(endpoint: string, body: any): Observable<BaseResponseModel<T>> {
     return this.http.put(`${this.baseUrl}/${endpoint}`, body).pipe(
       map((response) => this.handleResponse<T>(response)),
-      catchError(this.handleError)
+      catchError((error) => this.handleError(error))
     );
   }
 
   delete<T>(endpoint: string): Observable<BaseResponseModel<T>> {
     return this.http.delete(`${this.baseUrl}/${endpoint}`).pipe(
       map((response) => this.handleResponse<T>(response)),
-      catchError(this.handleError)
+      catchError((error) => this.handleError(error))
     );
   }
 }

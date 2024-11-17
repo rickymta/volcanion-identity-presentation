@@ -1,40 +1,112 @@
 <div class="row">
   <div class="col-sm-12">
-    <app-card cardTitle="Hello Card" blockClass="pc-component">
-      <div class="col-md-12 col-xl-8">
-        <h5 class="mb-3">Recent Orders</h5>
-        <div class="card tbl-card">
-          <div class="table-responsive">
-            <table class="table table-hover mb-0">
-              <thead>
-              <tr>
-                <th>#</th>
-                <th>FULLNAME</th>
-                <th>EMAIL</th>
-                <th>AVATAR</th>
-                <th>ADDRESS</th>
-                <th>STATUS</th>
-              </tr>
-              </thead>
-              <tbody>
-<!--                @for (order of recentOrder; track order) {-->
-<!--                  <tr>-->
-<!--                    <td>-->
-<!--                      <a href="javascript:" class="text-muted">{{ order.id }}</a>-->
-<!--                    </td>-->
-<!--                    <td>{{ order.name }}</td>-->
-<!--                    <td>-->
-<!--                  <span class="d-block">-->
-<!--                    <i class="badge-circle {{ order.status_type }} f-10 m-r-5"></i>-->
-<!--                    {{ order.status }}-->
-<!--                  </span>-->
-<!--                    </td>-->
-<!--                    <td class="text-end">{{ order.quantity }}</td>-->
-<!--                    <td class="text-end">{{ order.amount }}</td>-->
-<!--                  </tr>-->
-<!--                }-->
-              </tbody>
-            </table>
+    <app-card cardTitle="Account data" blockClass="pc-component">
+      <div class="row">
+        <div class="col-md-12 col-xl-12">
+          <h5 class="mb-3">Account action</h5>
+          <div class="card tbl-card">
+            <form class="card-body" [formGroup]="accountForm" (ngSubmit)="onSubmit()">
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="hidden" class="form-control" id="id" formControlName="id" />
+                    <input type="email" class="form-control" id="email" formControlName="email" />
+                  </div>
+
+                  <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input type="password" class="form-control" id="password" formControlName="password" />
+                  </div>
+
+                  <div class="form-group">
+                    <label for="fullname">Fullname:</label>
+                    <input type="text" class="form-control" id="fullname" formControlName="fullname" />
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="phoneNumber">Phone number:</label>
+                    <input type="text" class="form-control" id="phoneNumber" formControlName="phoneNumber" />
+                  </div>
+
+                  <div class="form-group">
+                    <label for="address">Address:</label>
+                    <input type="text" class="form-control" id="address" formControlName="address" />
+                  </div>
+
+                  <div class="form-group">
+                    <label for="avatar">Avatar:</label>
+                    <input type="text" class="form-control" id="avatar" formControlName="avatar" />
+                    @if (accountForm.get('avatar').value) {
+                      <img src="{{accountForm.get('avatar').value}}" alt="avatar" width="100" />
+                    }
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                @if (accountForm.get('id').value) {
+                  <button type="submit" class="btn btn-primary">Update</button>
+                } @else {
+                  <button type="submit" class="btn btn-success">Create</button>
+                }
+                @if (accountForm.get('isActived').value) {
+                  <button type="button" class="btn btn-warning"
+                          (click)="updateStatus(accountForm.get('id').value, false)">Deactive
+                  </button>
+                } @else {
+                  <button type="button" class="btn btn-warning"
+                          (click)="updateStatus(accountForm.get('id').value, true)">Active
+                  </button>
+                }
+                <button type="reset" class="btn btn-danger">Reset</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12 col-xl-12">
+          <h5 class="mb-3">Account list</h5>
+          <div class="card tbl-card">
+            <div class="table-responsive">
+              <table class="table table-hover mb-0">
+                <thead>
+                <tr>
+                  <th>#</th>
+                  <th>FULLNAME</th>
+                  <th>EMAIL</th>
+                  <th>AVATAR</th>
+                  <th>ADDRESS</th>
+                  <th>STATUS</th>
+                  <th>ACTION</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr *ngFor="let account of accounts; let i = index">
+                  <td>{{ i + 1 }}</td>
+                  <td>{{ account.fullname }}</td>
+                  <td>{{ account.email }}</td>
+                  <td>
+                    <img src="{{account.avatar}}" alt="avatar" class="rounded-circle" width="40">
+                  </td>
+                  <td>{{ account.address }}</td>
+                  <td>
+                    @if (account.isActived) {
+                      <span class="badge bg-success">Active</span>
+                    } @else {
+                      <span class="badge bg-danger">Deactive</span>
+                    }
+                  </td>
+                  <td>
+                    <a href="javascript:void(0)" (click)="onEdit(account.id)" class="btn btn-primary btn-sm">Edit</a>
+                    <a href="javascript:void(0)" (click)="onDelete(account.id)" class="btn btn-danger btn-sm">Delete</a>
+                  </td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>

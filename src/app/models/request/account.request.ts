@@ -1,4 +1,4 @@
-export interface Account {
+export class AccountRequest {
   id: string;
   fullname: string;
   email: string;
@@ -6,8 +6,4 @@ export interface Account {
   address: string;
   avatar: string;
   phoneNumber: string;
-  grantPermissions: string[];
-  isActived: boolean;
-  isDeleted: boolean;
-  createdAt: string;
 }
