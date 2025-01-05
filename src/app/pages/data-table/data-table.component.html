@@ -1,0 +1,35 @@
+<div class="data-table">
+  <!-- Tìm kiếm -->
+  <div class="search-bar">
+    <input
+      type="text"
+      placeholder="Search..."
+      (input)="onSearch($event.target.value)"
+    />
+  </div>
+
+  <!-- Bảng -->
+  <table>
+    <thead>
+    <tr>
+      <th *ngFor="let header of tableHeaders">{{ header }}</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let row of getCurrentPageData()">
+      <td *ngFor="let header of tableHeaders">{{ row[header] }}</td>
+    </tr>
+    </tbody>
+  </table>
+
+  <!-- Phân trang -->
+  <div class="pagination">
+    <button
+      *ngFor="let page of [].constructor(totalPages); let i = index"
+      [class.active]="currentPage === i + 1"
+      (click)="goToPage(i + 1)"
+    >
+      {{ i + 1 }}
+    </button>
+  </div>
+</div>

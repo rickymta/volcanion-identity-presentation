@@ -1,9 +1,11 @@
 // angular import
-import { Component } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { inject } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AccountService } from '../../services/account/account.service';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 
 // project import
 import { SharedModule } from 'src/app/theme/shared/shared.module';
@@ -16,15 +18,19 @@ import Swal from 'sweetalert2';
 @Component({
   selector: 'app-account',
   standalone: true,
-  imports: [SharedModule, NgOptimizedImage],
+  imports: [SharedModule, NgOptimizedImage, MatTableModule, MatPaginatorModule],
   templateUrl: './account.component.html',
   styleUrl: './account.component.scss'
 })
-export default class AccountComponent {
+export default class AccountComponent implements OnInit, AfterViewInit {
   accountService = inject(AccountService);
   router = inject(Router);
   accounts: Account[] = [];
   id: string = '';
+  displayedColumns: string[] = ['id', 'fullname', 'email', 'phoneNumber', 'avatar', 'address'];
+
+  dataSource = new MatTableDataSource<Account>(this.accounts);
+  @ViewChild(MatPaginator) paginator: MatPaginator;
 
   protected accountForm = new FormGroup({
     id: new FormControl(''),
@@ -34,8 +40,12 @@ export default class AccountComponent {
     address: new FormControl(''),
     phoneNumber: new FormControl(''),
     avatar: new FormControl(''),
-    isActived: new FormControl(true),
+    isActived: new FormControl(true)
   });
+
+  ngAfterViewInit() {
+    this.dataSource.paginator = this.paginator;
+  }
 
   ngOnInit() {
     this.accountService.getAccounts().subscribe({
