@@ -18,14 +18,14 @@ export default class LoginComponent {
   router = inject(Router);
 
   protected loginForm = new FormGroup({
-    email: new FormControl('', [Validators.required, Validators.email]),
+    phoneNumber: new FormControl('', [Validators.required]),
     password: new FormControl('', [Validators.required]),
     rememberMe: new FormControl(false),
   });
 
   onSubmit() {
     if (this.loginForm.valid) {
-      const loginModel: LoginModel = new LoginModel(this.loginForm.value.email ?? '', this.loginForm.value.password ?? '', this.loginForm.value.rememberMe ?? false);
+      const loginModel: LoginModel = new LoginModel(this.loginForm.value.phoneNumber ?? '', this.loginForm.value.password ?? '', this.loginForm.value.rememberMe ?? false);
       this.authService.login(loginModel).subscribe({
         next: (data: any) => {
           if (this.authService.isLoggedIn()) {

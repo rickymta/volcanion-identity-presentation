@@ -84,7 +84,7 @@ export class AuthInterceptor implements HttpInterceptor {
   private storeAuthData(data: LoginResponseModel): void {
     localStorage.setItem('accessToken', data.accessToken);
     localStorage.setItem('refreshToken', data.refreshToken);
-    localStorage.setItem('authUser', JSON.stringify(data.account));
+    localStorage.setItem('authUser', JSON.stringify(data.data));
   }
 
   private logout(): void {

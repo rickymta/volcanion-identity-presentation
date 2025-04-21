@@ -1,13 +1,13 @@
 import { CommonConstants } from '../../constants/common.constants';
 
 export class LoginModel {
-  loginName: string;
+  phoneNumber: string;
   password: string;
   rememberMe: boolean;
   issuer: string;
 
-  constructor(email: string, password: string, rememberMe: boolean) {
-    this.loginName = email;
+  constructor(phoneNumber: string, password: string, rememberMe: boolean) {
+    this.phoneNumber = phoneNumber;
     this.password = password;
     this.rememberMe = rememberMe;
     this.issuer = CommonConstants.ISSUER;

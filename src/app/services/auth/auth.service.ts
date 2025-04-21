@@ -123,7 +123,7 @@ export class AuthService {
   private storeAuthData(data: LoginResponseModel) {
     localStorage.setItem('accessToken', data.accessToken);
     localStorage.setItem('refreshToken', data.refreshToken);
-    localStorage.setItem('authUser', JSON.stringify(data.account));
-    this.setUser(data.account);
+    localStorage.setItem('authUser', JSON.stringify(data.data));
+    this.setUser(data.data);
   }
 }
