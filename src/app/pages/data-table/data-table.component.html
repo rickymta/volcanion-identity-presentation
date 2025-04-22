@@ -4,9 +4,25 @@
     <input
       type="text"
       placeholder="Search..."
-      (input)="onSearch($event.target.value)"
+      [(ngModel)]="searchQuery"
+      (input)="onSearch(searchQuery)"
     />
   </div>
+
+  <!-- Phân trang -->
+  <div class="pagination-wrapper">
+    <div class="pagination">
+      <button
+        *ngFor="let page of [].constructor(totalPages); let i = index"
+        [class.active]="currentPage === i + 1"
+        (click)="goToPage(i + 1)"
+      >
+        {{ i + 1 }}
+      </button>
+    </div>
+  </div>
+
+  <div><br /></div>
 
   <!-- Bảng -->
   <table>
@@ -21,15 +37,4 @@
     </tr>
     </tbody>
   </table>
-
-  <!-- Phân trang -->
-  <div class="pagination">
-    <button
-      *ngFor="let page of [].constructor(totalPages); let i = index"
-      [class.active]="currentPage === i + 1"
-      (click)="goToPage(i + 1)"
-    >
-      {{ i + 1 }}
-    </button>
-  </div>
 </div>

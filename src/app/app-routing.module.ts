@@ -41,6 +41,10 @@ const routes: Routes = [
       {
         path: 'permission',
         loadComponent: () => import('./pages/permission/permission.component')
+      },
+      {
+        path: 'data-table',
+        loadComponent: () => import('./pages/data-table/data-table.component').then(m => m.DataTableComponent)
       }
     ]
   },

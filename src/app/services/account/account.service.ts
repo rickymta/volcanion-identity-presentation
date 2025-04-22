@@ -16,7 +16,7 @@ export class AccountService {
   constructor(private apiService: ApiService) {}
 
   getAccounts(): Observable<BaseResponseModel<Account[]>> {
-    return this.apiService.get<Account[]>('account').pipe(
+    return this.apiService.get<Account[]>('account/get-all').pipe(
       catchError((error: ErrorResponseModel) => {
         Swal.fire({
           icon: 'error',
