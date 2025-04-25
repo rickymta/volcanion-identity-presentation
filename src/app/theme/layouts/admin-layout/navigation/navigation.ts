@@ -59,15 +59,6 @@ export const NavigationItems: NavigationItem[] = [
         url: '/permission',
         icon: 'user',
         breadcrumbs: false
-      },
-      {
-        id: 'data-table',
-        title: 'Datatable',
-        type: 'item',
-        classes: 'nav-item',
-        url: '/data-table',
-        icon: 'user',
-        breadcrumbs: false
       }
     ]
   },

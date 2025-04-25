@@ -6,6 +6,7 @@ export interface Account {
   address: string;
   avatar: string;
   phoneNumber: string;
+  birthday: string;
   grantPermissions: string[];
   isActived: boolean;
   isDeleted: boolean;
