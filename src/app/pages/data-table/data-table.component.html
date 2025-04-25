@@ -11,20 +11,43 @@
 
   <!-- Phân trang -->
   <div class="pagination-wrapper">
-    <div class="pagination">
-      <button
-        *ngFor="let page of [].constructor(totalPages); let i = index"
-        [class.active]="currentPage === i + 1"
-        (click)="goToPage(i + 1)"
-      >
-        {{ i + 1 }}
-      </button>
+    <div class="pagination-info">
+      <div class="pagination">
+        <button (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1">
+          Prev
+        </button>
+
+        <button
+          *ngFor="let page of getPaginationRange()"
+          [disabled]="page === '...'"
+          [class.active]="page === currentPage"
+          (click)="page !== '...' && goToPage(page)"
+        >
+          {{ page }}
+        </button>
+
+        <button (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages">
+          Next
+        </button>
+      </div>
+
+      <div class="page-info">
+        Page {{ currentPage }} of {{ totalPages }}
+        <span *ngIf="totalItems > 0"> | Total items: {{ totalItems }}</span>
+        <span *ngIf="totalItems === 0"> | No items found</span>
+      </div>
+    </div>
+
+    <div class="items-per-page">
+      <label for="itemsPerPage">Items per page: </label>
+      <select (change)="onPageSizeChange($event)" [value]="pageSize">
+        <option *ngFor="let option of pageSizeOptions" [value]="option">{{option}}</option>
+      </select>
     </div>
   </div>
 
   <div><br /></div>
 
-  <!-- Bảng -->
   <table>
     <thead>
     <tr>
