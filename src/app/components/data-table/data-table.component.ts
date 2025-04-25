@@ -1,6 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { HeaderModel } from '../../models/data-table/header.model';
+import { FilterModel } from '../../models/data-table/filter.model';
 
 @Component({
   selector: 'app-data-table',
@@ -10,8 +12,15 @@ import { FormsModule } from '@angular/forms';
   styleUrls: ['./data-table.component.scss']
 })
 export class DataTableComponent implements OnInit {
-  tableData: any[] = []; // Dữ liệu của bảng
-  tableHeaders: string[] = []; // Tiêu đề bảng
+  @Input() tableData: any[] = []; // Dữ liệu của bảng
+  @Input() tableHeaders: HeaderModel[] = []; // Tiêu đề bảng
+  @Input() pageSizeOptions: number[] = [10, 25, 50, 100]; // Các tùy chọn số hàng trên mỗi trang
+  @Output() afterChangePageSize = new EventEmitter<FilterModel>();
+  @Output() afterSelectedPage = new EventEmitter<FilterModel>();
+  @Output() afterSelectedRows = new EventEmitter<FilterModel>();
+  @Output() afterClickView = new EventEmitter<string>();
+  @Output() afterClickEdit = new EventEmitter<string>();
+  @Output() afterClickDelete = new EventEmitter<string>();
 
   data: any[] = [
     {
@@ -2203,13 +2212,14 @@ export class DataTableComponent implements OnInit {
     }
   ];
 
-  filteredData: any[] = []; // Dữ liệu sau khi tìm kiếm
-  pageSize: number = 10; // Số hàng trên mỗi trang
-  pageSizeOptions: number[] = [10, 25, 50, 100]; // Các tùy chọn số hàng trên mỗi trang
-  currentPage: number = 1; // Trang hiện tại
+  filterModel: FilterModel = {
+    page: 1,
+    pageSize: 10,
+    selected: [],
+    sortBy: null
+  };
   totalPages: number = 1; // Tổng số trang
   totalItems: number = 0; // Tổng số bản ghi
-  searchQuery: string = ''; // Từ khóa tìm kiếm
 
   /**
    * Hàm chạy lúc khởi tạo
@@ -2220,24 +2230,51 @@ export class DataTableComponent implements OnInit {
       this.tableData = this.data;
     }
     if (!this.tableHeaders || this.tableHeaders.length === 0) {
-      this.tableHeaders = ['id', 'name', 'quantity', 'status', 'status_type', 'amount'];
+      this.tableHeaders = [
+        {
+          title: 'id',
+          displayName: 'ID',
+          isSortable: false,
+          isFilter: false,
+          isDisplay: false
+        },
+        {
+          title: 'name',
+          displayName: 'Name',
+          isSortable: false,
+          isFilter: false,
+          isDisplay: true
+        },
+        {
+          title: 'quantity',
+          displayName: 'Quantity',
+          isSortable: false,
+          isFilter: false,
+          isDisplay: true
+        },
+        {
+          title: 'status',
+          displayName: 'Status',
+          isSortable: false,
+          isFilter: false,
+          isDisplay: true
+        },
+        {
+          title: 'status_type',
+          displayName: 'Status type',
+          isSortable: false,
+          isFilter: false,
+          isDisplay: false
+        },
+        {
+          title: 'amount',
+          displayName: 'Amount',
+          isSortable: false,
+          isFilter: false,
+          isDisplay: true
+        }];
     }
-    this.filteredData = [...this.tableData];
-    this.totalItems = this.filteredData.length;
-    this.updatePagination();
-  }
-
-  /**
-   * Tìm kiếm
-   * @param query
-   */
-  onSearch(query: string) {
-    this.searchQuery = query.toLowerCase();
-    this.filteredData = this.tableData.filter((row) =>
-      Object.values(row).some((value) => String(value).toLowerCase().includes(this.searchQuery))
-    );
-    this.currentPage = 1;
-    this.totalItems = this.filteredData.length;
+    this.totalItems = this.tableData.length;
     this.updatePagination();
   }
 
@@ -2245,15 +2282,25 @@ export class DataTableComponent implements OnInit {
    * Cập nhật số trang
    */
   updatePagination() {
-    this.totalPages = Math.ceil(this.filteredData.length / this.pageSize);
+    this.totalPages = Math.ceil(this.tableData.length / this.filterModel.pageSize);
   }
 
   /**
    * Lấy dữ liệu trang hiện tại
    */
   getCurrentPageData() {
-    const startIndex = (this.currentPage - 1) * this.pageSize;
-    return this.filteredData.slice(startIndex, startIndex + this.pageSize);
+    const startIndex = (this.filterModel.page - 1) * this.filterModel.pageSize;
+    return this.tableData.slice(startIndex, startIndex + this.filterModel.pageSize);
+  }
+
+  onPageInputChange(event: Event) {
+    const selectElement = event.target as HTMLSelectElement;
+    const pageInt = parseInt(selectElement.value);
+    if (pageInt < 1 || pageInt > this.totalPages) {
+      return;
+    }
+
+    this.filterModel.page = pageInt;
   }
 
   /**
@@ -2261,7 +2308,7 @@ export class DataTableComponent implements OnInit {
    * @param page
    */
   goToPage(page: any) {
-    this.currentPage = parseInt(page);
+    this.filterModel.page = parseInt(page);
   }
 
   /**
@@ -2270,52 +2317,25 @@ export class DataTableComponent implements OnInit {
    */
   onPageSizeChange(event: Event) {
     const selectElement = event.target as HTMLSelectElement;
-    this.pageSize = +selectElement.value;
-    this.currentPage = 1;
+    this.filterModel.pageSize = +selectElement.value;
+    this.filterModel.page = 1;
     this.updatePagination();
   }
 
-  /**
-   * Tạo dữ liệu cho thanh phân trang
-   */
-  getPaginationRange(): (number | string)[] {
-    const total = this.totalPages;
-    const current = this.currentPage;
-    const maxVisible = 9;
+  onView(id: string) {
+    this.afterClickView.emit(id)
+  }
 
-    if (total <= maxVisible) {
-      // Nếu tổng trang nhỏ hơn 9 thì hiển thị hết
-      return Array.from({ length: total }, (_, i) => i + 1);
-    }
+  onEdit(id: string) {
+    this.afterClickEdit.emit(id)
+  }
 
-    const pages: (number | string)[] = [];
+  onDelete(id: string) {
+    this.afterClickDelete.emit(id)
+  }
 
-    const sideWidth = 1;
-    const middleWidth = 5; // Số lượng trang ở giữa (kể cả currentPage)
-    const left = Math.max(current - 2, 2);
-    const right = Math.min(current + 2, total - 1);
-
-    // Luôn có trang đầu
-    pages.push(1);
-
-    // Dấu "..." bên trái
-    if (left > 2) {
-      pages.push('...');
-    }
-
-    // Các trang ở giữa
-    for (let i = left; i <= right; i++) {
-      pages.push(i);
-    }
-
-    // Dấu "..." bên phải
-    if (right < total - 1) {
-      pages.push('...');
-    }
-
-    // Luôn có trang cuối
-    pages.push(total);
-
-    return pages;
+  onSelectRow(id: string) {
+    this.filterModel.selected.push(id);
+    this.afterSelectedRows.emit(this.filterModel);
   }
 }

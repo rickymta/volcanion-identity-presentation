@@ -1,0 +1,64 @@
+<div class="data-table">
+  <!-- Phân trang -->
+  <div class="pagination-wrapper">
+    <div class="pagination-info">
+      <div class="pagination">
+        <button (click)="goToPage(filterModel.page - 1)" [disabled]="filterModel.page === 1">
+          Prev
+        </button>
+
+        <input type="text" inputmode="numeric" [pattern]="[0-9]" [value]="filterModel.page" (keydown.enter)="onPageInputChange($event)" style="width: 80px" />
+
+        <button (click)="goToPage(filterModel.page + 1)" [disabled]="filterModel.page === totalPages">
+          Next
+        </button>
+      </div>
+
+      <div class="page-info">
+        Page {{ filterModel.page }} of {{ totalPages }}
+        <span *ngIf="totalItems > 0"> | Total items: {{ totalItems }}</span>
+        <span *ngIf="totalItems === 0"> | No items found</span>
+      </div>
+    </div>
+
+    <div class="items-per-page">
+      <label for="itemsPerPage">Items per page: </label>
+      <select id="itemsPerPage" style="height: 34px" (change)="onPageSizeChange($event)" [value]="filterModel.pageSize">
+        <option *ngFor="let option of pageSizeOptions" [value]="option">{{option}}</option>
+      </select>
+    </div>
+  </div>
+
+  <div><br /></div>
+
+  <table>
+    <thead>
+    <tr>
+      <th>#</th>
+      <ng-container *ngFor="let header of tableHeaders">
+        <th *ngIf="header.isDisplay">
+          {{ header.displayName }}
+        </th>
+      </ng-container>
+      <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let row of getCurrentPageData()">
+      <td>
+        <input type="checkbox" [(ngModel)]="row.selected" (change)="onSelectRow(row.id)" />
+      </td>
+      <ng-container *ngFor="let header of tableHeaders">
+        <td *ngIf="header.isDisplay">
+          {{ row[header.title] }}
+        </td>
+      </ng-container>
+      <td>
+        <a href="javascript:" class="btn btn-sm btn-info" (click)="onView(row.id)">View</a>
+        <a href="javascript:" class="btn btn-sm btn-warning" (click)="onEdit(row.id)">Edit</a>
+        <a href="javascript:" class="btn btn-sm btn-danger" (click)="onDelete(row.id)">Delete</a>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</div>
